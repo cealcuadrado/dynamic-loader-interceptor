@@ -1,3 +1,4 @@
+import { LoaderDialogComponent } from './../loader-dialog/loader-dialog.component';
 import { HideLoaderAction, ShowLoaderAction } from './../actions/loader.actions';
 import { Injectable } from '@angular/core';
 import {
@@ -8,16 +9,18 @@ import {
 } from '@angular/common/http';
 import { Observable, finalize, map } from 'rxjs';
 import { Store } from '@ngxs/store';
+import { MatDialog } from '@angular/material/dialog';
 
 @Injectable()
 export class LoaderInterceptor implements HttpInterceptor {
 
   constructor(
-    private store: Store
+    private store: Store,
+    private dialog: MatDialog
   ) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    console.log('Request');
+    const dialogRef = this.dialog.open(LoaderDialogComponent)
     this.store.dispatch(new ShowLoaderAction());
 
     return next.handle(request).pipe(
@@ -25,7 +28,10 @@ export class LoaderInterceptor implements HttpInterceptor {
         console.log('Response');
         return res;
       }),
-      finalize(() => this.store.dispatch(new HideLoaderAction()))
+      finalize(() => {
+        this.store.dispatch(new HideLoaderAction());
+        dialogRef.close();
+      })
     );
   }
 }

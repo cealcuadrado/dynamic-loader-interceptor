@@ -1,3 +1,9 @@
 <section class="layout">
-  <p>layout works!</p>
+  <div *ngIf="loading$ | async">
+    <p><i class="fa-solid fa-spinner fa-fw"></i> Loading</p>
+  </div>
+  <div *ngIf="!loading">
+    <p>layout works!</p>
+    <p><i class="fa-solid fa-check fa-fw color-success"></i> Loaded</p>
+  </div>
 </section>
